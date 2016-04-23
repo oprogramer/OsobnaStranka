@@ -1,391 +1,269 @@
-;(function () {
-	
-	'use strict';
+/* ========================================================================= */
+/*	Preloader
+/* ========================================================================= */
 
-	// iPad and iPod detection	
-	var isiPad = function(){
-		return (navigator.platform.indexOf("iPad") != -1);
-	};
+jQuery(window).load(function(){
 
-	var isiPhone = function(){
-	    return (
-			(navigator.platform.indexOf("iPhone") != -1) || 
-			(navigator.platform.indexOf("iPod") != -1)
-	    );
-	};
+	$("#preloader").fadeOut("slow");
 
-	// Parallax
-	var parallax = function() {
-		$(window).stellar();
-	};
+});
 
-	// Counter
-	var counter = function() {
-		$('.js-counter').countTo({
-			 formatter: function (value, options) {
-	      return value.toFixed(options.decimals);
-	    },
-		});
-	};
+/* ========================================================================= */
+/*  Welcome Section Slider
+/* ========================================================================= */
 
-	// ScrollTop 
-	var scrlTop =  function() {
-		$('.fh5co-gotop').click(function(event){
-			$('html, body').animate({
-		        scrollTop: 0
-		    }, 500, 'easeInOutExpo');
+$(function() {
 
-		    event.preventDefault();
-		    return false;
-		});
-	};
+    var Page = (function() {
 
-	// Hover
-	var imgHover = function() {
-		$('.fh5co-project > a').mouseenter(function(){
-			$(this).find('.fh5co-overlay, .fh5co-overlay-text').stop().animate({
-				opacity: 1
-			}, 400 );
-		}).mouseleave(function(){
-			$(this).find('.fh5co-overlay, .fh5co-overlay-text').stop().animate({
-				opacity: 0
-			}, 400 );
-		});
-	};
+        var $navArrows = $( '#nav-arrows' ),
+            $nav = $( '#nav-dots > span' ),
+            slitslider = $( '#slider' ).slitslider( {
+                onBeforeChange : function( slide, pos ) {
 
-	// SmoothScroll
-	var smoothScroll = function() {
-		$('.smoothscroll').click(function(){
+                    $nav.removeClass( 'nav-dot-current' );
+                    $nav.eq( pos ).addClass( 'nav-dot-current' );
 
-	    $('html, body').animate({
-	        scrollTop: $( $.attr(this, 'href') ).offset().top - 70
-	    }, 700, 'easeInOutExpo');
-	    return false;
-		});
-	};
+                }
+            } ),
 
-	
-	// MagnificPopup
-	var magnifPopup = function() {
-		$('.image-popup').magnificPopup({
-			type: 'image',
-			removalDelay: 300,
-			mainClass: 'mfp-with-zoom',
-		  gallery:{
-		    enabled:true
-		  },
-		  zoom: {
-		    enabled: true, // By default it's false, so don't forget to enable it
+            init = function() {
 
-		    duration: 300, // duration of the effect, in milliseconds
-		    easing: 'ease-in-out', // CSS transition easing function
+                initEvents();
+                
+            },
+            initEvents = function() {
 
-		    // The "opener" function should return the element from which popup will be zoomed in
-		    // and to which popup will be scaled down
-		    // By defailt it looks for an image tag:
-		    opener: function(openerElement) {
-		      // openerElement is the element on which popup was initialized, in this case its <a> tag
-		      // you don't need to add "opener" option if this code matches your needs, it's defailt one.
-		      return openerElement.is('img') ? openerElement : openerElement.find('img');
-		    }
-		  }
-		});
-	};
+                // add navigation events
+                $navArrows.children( ':last' ).on( 'click', function() {
 
-	// Accordion
-	var accordion = function() {
-		$('.js-fh5co-accordion-toggle').click(function(event){
-			var $this = $(this);
-			if ( $this.closest('.fh5co-accordion').find('.fh5co-accordion-body').is(':visible') ) {
-				$this.text('Show More');
-			} else {
-				$this.text('Show Less');
-			}
-			$this.closest('.fh5co-accordion').find('.fh5co-accordion-body').slideToggle(400, 'easeInOutExpo');
-			event.preventDefault();
-		})
-	};
+                    slitslider.next();
+                    return false;
 
-	// Scroll Animations
+                } );
 
-	// Animate Feature
-	var animateSocial = function() {
-		if ( $('#fh5co-intro-social').length > 0 ) {	
-			$('#fh5co-intro-social > a').each(function( k ) {
-				
-				var el = $(this);
-				
-				setTimeout ( function () {
-					el.addClass('fadeInLeft animated');
-				},  k * 200, 'easeInOutExpo' );
-				
-			});
+                $navArrows.children( ':first' ).on( 'click', function() {
+                    
+                    slitslider.previous();
+                    return false;
+
+                } );
+
+                $nav.each( function( i ) {
+                
+                    $( this ).on( 'click', function( event ) {
+                        
+                        var $dot = $( this );
+                        
+                        if( !slitslider.isActive() ) {
+
+                            $nav.removeClass( 'nav-dot-current' );
+                            $dot.addClass( 'nav-dot-current' );
+                        
+                        }
+                        
+                        slitslider.jump( i + 1 );
+                        return false;
+                    
+                    } );
+                    
+                } );
+
+            };
+
+            return { init : init };
+
+    })();
+
+    Page.init();
+
+});
+
+
+
+$(document).ready(function(){
+
+	/* ========================================================================= */
+	/*	Menu item highlighting
+	/* ========================================================================= */
+
+	jQuery('#nav').singlePageNav({
+		offset: jQuery('#nav').outerHeight(),
+		filter: ':not(.external)',
+		speed: 2000,
+		currentClass: 'current',
+		easing: 'easeInOutExpo',
+		updateHash: true,
+		beforeStart: function() {
+			console.log('begin scrolling');
+		},
+		onComplete: function() {
+			console.log('done scrolling');
 		}
-	};
-
-	// Animate Bio
-	var animateBio = function() {
-		if ( $('#bio-animate').length > 0 ) {
-			$('#bio-animate .to-animate').each(function(k){
-
-				var el = $(this);
-				
-				setTimeout ( function () {
-					el.addClass('fadeInUp animated');
-				},  k * 200, 'easeInOutExpo' );
-			});
-		}
-	};
-
-	// Animate Counter 
-	var animateCounter = function() {
-		if ( $('#counter-animate').length > 0 ) {
-			$('#counter-animate .to-animate').each(function(k){
-
-				var el = $(this);
-				
-				setTimeout ( function () {
-					el.addClass('fadeInUp animated');
-				},  k * 200, 'easeInOutExpo' );
-			});
-		}
-	}
-
-	// Animate Projects
-	var animateProjects = function() {
-		if ( $('#projects-animate').length > 0 ) {
-			$('#projects-animate .to-animate').each(function( k ) {
-				
-				var el = $(this);
-				
-				setTimeout ( function () {
-					el.addClass('fadeInUp animated');
-				},  k * 200, 'easeInOutExpo' );
-				
-			});
-		}
-	};
-
-	// Animate Testimony
-	var animateTestimony = function() {
-		if ( $('#testimony-animate').length > 0 ) {
-			$('#testimony-animate .to-animate').each(function( k ) {
-				
-				var el = $(this);
-				
-				setTimeout ( function () {
-					el.addClass('fadeInUp animated');
-				},  k * 200, 'easeInOutExpo' );
-				
-			});
-		}
-	};
-
-	// Animate Testimony
-	var animateServices = function() {
-		if ( $('#services-animate').length > 0 ) {
-			$('#services-animate .to-animate').each(function( k ) {
-				
-				var el = $(this);
-				
-				setTimeout ( function () {
-					el.addClass('fadeInUp animated');
-				},  k * 200, 'easeInOutExpo' );
-				
-			});
-		}
-	};
-
-	// Animate Contact
-	var animateContact = function() {
-		if ( $('#contact-animate').length > 0 ) {
-			$('#contact-animate .to-animate').each(function( k ) {
-				
-				var el = $(this);
-				
-				setTimeout ( function () {
-					el.addClass('fadeInUp animated');
-				},  k * 200, 'easeInOutExpo' );
-				
-			});
-		}
-	};
-
-	// Animate Footer
-	var animateFooter = function() {
-		if ( $('#footer-animate').length > 0 ) {
-			$('#footer-animate .to-animate').each(function( k ) {
-				
-				var el = $(this);
-				
-				setTimeout ( function () {
-					el.addClass('fadeIn animated');
-				},  k * 200, 'easeInOutExpo' );
-				
-			});
-		}
-	};
-
-
-
-	
-	// Waypoints 
-	var heroWayPoint = function() {
-		if ( $('#fh5co-header').length > 0 ) {
-			$('#fh5co-header').waypoint( function( direction ) {
-										
-				if( direction === 'down' && !$(this).hasClass('animated') ) {
-					
-					
-					setTimeout(function(){
-						$('.animate-1').addClass('fadeInUp animated');
-					}, 100);
-					setTimeout(function(){
-						$('.animate-2').addClass('fadeInUp animated');
-					}, 400);
-
-					setTimeout(animateSocial, 600);
-					
-					
-					$(this).addClass('animated');
-						
-				}
-			} , { offset: '90%' } );
-		}
-	};
-
-	var bioWayPoint = function() {
-		if ($('#bio-animate').length > 0 ) {
-			$('#bio-animate').waypoint( function( direction ) {
-										
-				if( direction === 'down' && !$(this).hasClass('animated') ) {
-					
-					setTimeout( animateBio , 200);
-					
-					$(this).addClass('animated');
-						
-				}
-			} , { offset: '90%' } );
-		}
-	};
-
-	var counterWayPoint = function() {
-		if ($('#counter-animate').length > 0 ) {
-			$('#counter-animate').waypoint( function( direction ) {
-										
-				if( direction === 'down' && !$(this).hasClass('animated') ) {
-					
-					setTimeout( animateCounter , 200);
-					setTimeout( counter , 400);
-
-					
-					
-					$(this).addClass('animated');
-						
-				}
-			} , { offset: '90%' } );
-		}
-	};
-
-	var projectsWayPoint = function() {
-		if ($('#projects-animate').length > 0 ) {
-			$('#projects-animate').waypoint( function( direction ) {
-										
-				if( direction === 'down' && !$(this).hasClass('animated') ) {
-					
-					setTimeout( animateProjects , 200);
-					
-					$(this).addClass('animated');
-						
-				}
-			} , { offset: '90%' } );
-		}
-	};
-	
-	var testimonyWayPoint = function() {
-		if ($('#testimony-animate').length > 0 ) {
-			$('#testimony-animate').waypoint( function( direction ) {
-										
-				if( direction === 'down' && !$(this).hasClass('animated') ) {
-					
-					setTimeout( animateTestimony , 200);
-					
-					$(this).addClass('animated');
-						
-				}
-			} , { offset: '90%' } );
-		}
-	};
-
-	var servicesWayPoint = function() {
-		if ($('#services-animate').length > 0 ) {
-			$('#services-animate').waypoint( function( direction ) {
-										
-				if( direction === 'down' && !$(this).hasClass('animated') ) {
-					
-					setTimeout( animateServices , 200);
-					
-					$(this).addClass('animated');
-						
-				}
-			} , { offset: '90%' } );
-		}
-	};
-
-	var contactWayPoint = function() {
-		if ($('#contact-animate').length > 0 ) {
-			$('#contact-animate').waypoint( function( direction ) {
-										
-				if( direction === 'down' && !$(this).hasClass('animated') ) {
-					
-					setTimeout( animateContact , 200);
-					
-					$(this).addClass('animated');
-						
-				}
-			} , { offset: '90%' } );
-		}
-	};
-	
-	var footerWayPoint = function() {
-		if ($('#footer-animate').length > 0 ) {
-			$('#footer-animate').waypoint( function( direction ) {
-										
-				if( direction === 'down' && !$(this).hasClass('animated') ) {
-					
-					setTimeout( animateFooter , 200);
-					
-					$(this).addClass('animated');
-						
-				}
-			} , { offset: '90%' } );
-		}
-	};
-	
-
-	
-	$(function(){
-		
-		if ( !isiPad() || !isiPhone() ) {
-			parallax();
-		}
-
-		imgHover();
-		accordion();
-		smoothScroll();
-		scrlTop();
-		magnifPopup();
-		
-		heroWayPoint();
-		bioWayPoint();
-		counterWayPoint();
-		projectsWayPoint();
-		testimonyWayPoint();
-		servicesWayPoint();
-		contactWayPoint();
-		footerWayPoint();
-
 	});
+	
+    $(window).scroll(function () {
+        if ($(window).scrollTop() > 400) {
+            $(".navbar-brand a").css("color","#fff");
+            $("#navigation").removeClass("animated-header");
+        } else {
+            $(".navbar-brand a").css("color","inherit");
+            $("#navigation").addClass("animated-header");
+        }
+    });
+	
+	/* ========================================================================= */
+	/*	Fix Slider Height
+	/* ========================================================================= */	
+
+    // Slider Height
+    var slideHeight = $(window).height();
+    
+    $('#home-slider, #slider, .sl-slider, .sl-content-wrapper').css('height',slideHeight);
+
+    $(window).resize(function(){'use strict',
+        $('#home-slider, #slider, .sl-slider, .sl-content-wrapper').css('height',slideHeight);
+    });
+	
+	
+	
+	$("#works, #testimonial").owlCarousel({	 
+		navigation : true,
+		pagination : false,
+		slideSpeed : 700,
+		paginationSpeed : 400,
+		singleItem:true,
+		navigationText: ["<i class='fa fa-angle-left fa-lg'></i>","<i class='fa fa-angle-right fa-lg'></i>"]
+	});
+	
+	
+	/* ========================================================================= */
+	/*	Featured Project Lightbox
+	/* ========================================================================= */
+
+	$(".fancybox").fancybox({
+		padding: 0,
+
+		openEffect : 'elastic',
+		openSpeed  : 650,
+
+		closeEffect : 'elastic',
+		closeSpeed  : 550,
+
+		closeClick : true,
+			
+		beforeShow: function () {
+			this.title = $(this.element).attr('title');
+			this.title = '<h3>' + this.title + '</h3>' + '<p>' + $(this.element).parents('.portfolio-item').find('img').attr('alt') + '</p>';
+		},
+		
+		helpers : {
+			title : { 
+				type: 'inside' 
+			},
+			overlay : {
+				css : {
+					'background' : 'rgba(0,0,0,0.8)'
+				}
+			}
+		}
+	});
+	
+});
 
 
-}());
+/* ==========  START GOOGLE MAP ========== */
+
+// When the window has finished loading create our google map below
+google.maps.event.addDomListener(window, 'load', init);
+
+function init() {
+    // Basic options for a simple Google Map
+    // For more options see: https://developers.google.com/maps/documentation/javascript/reference#MapOptions
+
+	    var myLatLng = new google.maps.LatLng(22.402789, 91.822156);
+
+	    var mapOptions = {
+	        zoom: 15,
+	        center: myLatLng,
+	        disableDefaultUI: true,
+	        scrollwheel: false,
+	        navigationControl: true,
+	        mapTypeControl: false,
+	        scaleControl: false,
+	        draggable: true,
+
+        // How you would like to style the map. 
+        // This is where you would paste any style found on Snazzy Maps.
+        styles: [{
+            featureType: 'water',
+            stylers: [{
+                color: '#46bcec'
+            }, {
+                visibility: 'on'
+            }]
+        }, {
+            featureType: 'landscape',
+            stylers: [{
+                color: '#f2f2f2'
+            }]
+        }, {
+            featureType: 'road',
+            stylers: [{
+                saturation: -100
+            }, {
+                lightness: 45
+            }]
+        }, {
+            featureType: 'road.highway',
+            stylers: [{
+                visibility: 'simplified'
+            }]
+        }, {
+            featureType: 'road.arterial',
+            elementType: 'labels.icon',
+            stylers: [{
+                visibility: 'off'
+            }]
+        }, {
+            featureType: 'administrative',
+            elementType: 'labels.text.fill',
+            stylers: [{
+                color: '#444444'
+            }]
+        }, {
+            featureType: 'transit',
+            stylers: [{
+                visibility: 'off'
+            }]
+        }, {
+            featureType: 'poi',
+            stylers: [{
+                visibility: 'off'
+            }]
+        }]
+    };
+
+    // Get the HTML DOM element that will contain your map 
+    // We are using a div with id="map" seen below in the <body>
+    var mapElement = document.getElementById('map-canvas');
+
+    // Create the Google Map using our element and options defined above
+    var map = new google.maps.Map(mapElement, mapOptions);
+
+    // Let's also add a marker while we're at it
+    var marker = new google.maps.Marker({
+        position: new google.maps.LatLng(22.402789, 91.822156),
+        map: map,
+		icon: 'img/icons/map-marker.png',
+    });
+}
+
+// ========== END GOOGLE MAP ========== //
+
+var wow = new WOW ({
+	offset:       75,          // distance to the element when triggering the animation (default is 0)
+	mobile:       false,       // trigger animations on mobile devices (default is true)
+});
+wow.init();
+
